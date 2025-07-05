@@ -1,0 +1,41 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+/* In your main CSS file */
+@media (max-width: 768px) {
+  .message-bubble {
+    max-width: 90% !important;
+  }
+  
+  .chat-container {
+    padding: 8px !important;
+  }
+  
+  .input-area {
+    padding: 8px !important;
+  }
+}
+
+/* For very small screens */
+@media (max-width: 480px) {
+  .message-bubble {
+    max-width: 95% !important;
+    padding: 12px !important;
+  }
+  
+  .MuiAvatar-root {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 0.8rem !important;
+  }
+}
