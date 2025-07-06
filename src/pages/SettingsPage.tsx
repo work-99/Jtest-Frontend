@@ -111,9 +111,9 @@ const SettingsPage: React.FC = () => {
         </Box>
 
         <Box sx={{ p: 3 }}>
-          <Grid container spacing={3}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             {/* Agent Behavior Settings */}
-            <Grid item xs={12}>
+            <Box>
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
@@ -159,17 +159,17 @@ const SettingsPage: React.FC = () => {
                   </Box>
                 </CardContent>
               </Card>
-            </Grid>
+            </Box>
 
             {/* AI Configuration */}
-            <Grid item xs={12}>
+            <Box>
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
                     AI Configuration
                   </Typography>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} md={6}>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                    <Box sx={{ flex: '1 1 300px' }}>
                       <FormControl fullWidth>
                         <InputLabel>AI Model</InputLabel>
                         <Select
@@ -182,8 +182,8 @@ const SettingsPage: React.FC = () => {
                           <MenuItem value="gpt-3.5-turbo">GPT-3.5 Turbo</MenuItem>
                         </Select>
                       </FormControl>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
+                    </Box>
+                    <Box sx={{ flex: '1 1 300px' }}>
                       <TextField
                         fullWidth
                         type="number"
@@ -192,8 +192,8 @@ const SettingsPage: React.FC = () => {
                         onChange={(e) => setSettings(prev => ({ ...prev, maxContextLength: parseInt(e.target.value) }))}
                         inputProps={{ min: 1000, max: 8000 }}
                       />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
+                    </Box>
+                    <Box sx={{ flex: '1 1 300px' }}>
                       <TextField
                         fullWidth
                         type="number"
@@ -202,22 +202,22 @@ const SettingsPage: React.FC = () => {
                         onChange={(e) => setSettings(prev => ({ ...prev, responseTimeout: parseInt(e.target.value) }))}
                         inputProps={{ min: 10, max: 120 }}
                       />
-                    </Grid>
-                  </Grid>
+                    </Box>
+                  </Box>
                 </CardContent>
               </Card>
-            </Grid>
+            </Box>
 
             {/* Information */}
-            <Grid item xs={12}>
+            <Box>
               <Alert severity="info">
                 <Typography variant="body2">
                   These settings control how the AI agent behaves and processes information. 
                   Changes will take effect immediately for new interactions.
                 </Typography>
               </Alert>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </Box>
       </Paper>
     </Box>

@@ -38,11 +38,13 @@ import {
   Email as EmailIcon,
   CheckCircle as CheckCircleIcon,
   Error as ErrorIcon,
-  Info as InfoIcon
+  Info as InfoIcon,
+  PersonAdd as PersonAddIcon
 } from '@mui/icons-material';
 import { useChat } from '../hooks/useChat';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../services/api';
+import ConnectionStatus from '../components/ui/ConnectionStatus';
 import toast from 'react-hot-toast';
 import ReactMarkdown from 'react-markdown';
 import { format } from 'date-fns';
@@ -73,6 +75,8 @@ const ChatPage: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [showContext, setShowContext] = useState(false);
   const [showTasks, setShowTasks] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [contextData, setContextData] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -331,8 +335,8 @@ const ChatPage: React.FC = () => {
       <Dialog open={showContext} onClose={() => setShowContext(false)} maxWidth="md" fullWidth>
         <DialogTitle>Context & Settings</DialogTitle>
         <DialogContent>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+            <Box sx={{ flex: '1 1 300px' }}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
@@ -357,8 +361,8 @@ const ChatPage: React.FC = () => {
                   </Box>
                 </CardContent>
               </Card>
-            </Grid>
-            <Grid item xs={12} md={6}>
+            </Box>
+            <Box sx={{ flex: '1 1 300px' }}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
@@ -380,8 +384,40 @@ const ChatPage: React.FC = () => {
                   </List>
                 </CardContent>
               </Card>
-            </Grid>
-          </Grid>
+            </Box>
+            <Box sx={{ flex: '1 1 300px' }}>
+              <Typography variant="h6" gutterBottom>
+                Connected Services
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <ConnectionStatus service="gmail" />
+                <ConnectionStatus service="hubspot" />
+              </Box>
+            </Box>
+            <Box sx={{ flex: '1 1 300px' }}>
+              <Typography variant="h6" gutterBottom>
+                Quick Actions
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Button
+                  variant="outlined"
+                  startIcon={<EmailIcon />}
+                  onClick={() => setShowEmailModal(true)}
+                  fullWidth
+                >
+                  Send Email
+                </Button>
+                <Button
+                  variant="outlined"
+                  startIcon={<PersonAddIcon />}
+                  onClick={() => setShowContactModal(true)}
+                  fullWidth
+                >
+                  Add Contact
+                </Button>
+              </Box>
+            </Box>
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowContext(false)}>Close</Button>

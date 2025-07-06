@@ -1,177 +1,168 @@
 import axios from 'axios';
-import { Event } from '../types/calendarTypes';
-import { useAuth } from '../hooks/useAuth';
+import { Event as CalendarEvent } from '../types/calendarTypes';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 /**
  * Calendar Service for interacting with Google Calendar API
  */
 export const CalendarService = {
   /**
-   * Fetch events from Google Calendar
-   * @param params { timeMin?: string; timeMax?: string; maxResults?: number }
-   * @returns Promise<Event[]>
+   * Get user's calendar events
+   * @param timeMin - Start time for events
+   * @param timeMax - End time for events
+   * @returns Promise<CalendarEvent[]>
    */
-  async getEvents(params: {
-    timeMin?: string;
-    timeMax?: string;
-    maxResults?: number;
-  }): Promise<Event[]> {
+  async getEvents(timeMin?: string, timeMax?: string): Promise<CalendarEvent[]> {
     try {
       const response = await axios.get(`${API_BASE_URL}/calendar/events`, {
-        params: {
-          timeMin: params.timeMin || new Date().toISOString(),
-          timeMax: params.timeMax,
-          maxResults: params.maxResults || 50,
-        },
-        headers: await CalendarService.getAuthHeader(),
+        params: { timeMin, timeMax },
+        headers: await this.getAuthHeader()
       });
-      return response.data.items;
+      return response.data.events;
     } catch (error) {
       console.error('Error fetching calendar events:', error);
-      throw new Error('Failed to fetch calendar events');
+      throw error;
     }
   },
 
   /**
    * Create a new calendar event
-   * @param eventData Partial<Event>
-   * @returns Promise<Event>
+   * @param eventData - Event data
+   * @returns Promise<CalendarEvent>
    */
-  async createEvent(eventData: Partial<Event>): Promise<Event> {
+  async createEvent(eventData: Partial<CalendarEvent>): Promise<CalendarEvent> {
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/calendar/events`,
-        eventData,
-        {
-          headers: await CalendarService.getAuthHeader(),
-        }
-      );
-      return response.data;
+      const response = await axios.post(`${API_BASE_URL}/calendar/events`, eventData, {
+        headers: await this.getAuthHeader()
+      });
+      return response.data.event;
     } catch (error) {
       console.error('Error creating calendar event:', error);
-      throw new Error('Failed to create calendar event');
+      throw error;
     }
   },
 
   /**
    * Update an existing calendar event
-   * @param eventId string
-   * @param eventData Partial<Event>
-   * @returns Promise<Event>
+   * @param eventId - Event ID
+   * @param eventData - Updated event data
+   * @returns Promise<CalendarEvent>
    */
-  async updateEvent(eventId: string, eventData: Partial<Event>): Promise<Event> {
+  async updateEvent(eventId: string, eventData: Partial<CalendarEvent>): Promise<CalendarEvent> {
     try {
-      const response = await axios.put(
-        `${API_BASE_URL}/calendar/events/${eventId}`,
-        eventData,
-        {
-          headers: await CalendarService.getAuthHeader(),
-        }
-      );
-      return response.data;
+      const response = await axios.put(`${API_BASE_URL}/calendar/events/${eventId}`, eventData, {
+        headers: await this.getAuthHeader()
+      });
+      return response.data.event;
     } catch (error) {
       console.error('Error updating calendar event:', error);
-      throw new Error('Failed to update calendar event');
+      throw error;
     }
   },
 
   /**
    * Delete a calendar event
-   * @param eventId string
+   * @param eventId - Event ID
    * @returns Promise<void>
    */
   async deleteEvent(eventId: string): Promise<void> {
     try {
       await axios.delete(`${API_BASE_URL}/calendar/events/${eventId}`, {
-        headers: await CalendarService.getAuthHeader(),
+        headers: await this.getAuthHeader()
       });
     } catch (error) {
       console.error('Error deleting calendar event:', error);
-      throw new Error('Failed to delete calendar event');
+      throw error;
     }
   },
 
   /**
-   * Get available time slots
-   * @param params { timeMin: string; timeMax: string; duration: number }
-   * @returns Promise<{ start: string; end: string }[]>
+   * Get available time slots for scheduling
+   * @param date - Date to check availability
+   * @param duration - Duration in minutes
+   * @returns Promise<string[]>
    */
-  async getAvailableSlots(params: {
-    timeMin: string;
-    timeMax: string;
-    duration: number; // in minutes
-  }): Promise<{ start: string; end: string }[]> {
+  async getAvailableSlots(date: string, duration: number = 30): Promise<string[]> {
     try {
-      const response = await axios.get(`${API_BASE_URL}/calendar/availability`, {
-        params: {
-          timeMin: params.timeMin,
-          timeMax: params.timeMax,
-          duration: params.duration,
-        },
-        headers: await CalendarService.getAuthHeader(),
+      const response = await axios.get(`${API_BASE_URL}/calendar/available-slots`, {
+        params: { date, duration },
+        headers: await this.getAuthHeader()
       });
-      return response.data.availableSlots;
+      return response.data.slots;
     } catch (error) {
       console.error('Error fetching available slots:', error);
-      throw new Error('Failed to fetch available time slots');
+      throw error;
     }
   },
 
   /**
-   * Schedule a meeting with a client
-   * @param clientEmail string
-   * @param slot { start: string; end: string }
-   * @param summary string
-   * @param description string
-   * @returns Promise<Event>
+   * Schedule an appointment
+   * @param appointmentData - Appointment data
+   * @returns Promise<CalendarEvent>
    */
-  async scheduleMeeting(
-    clientEmail: string,
-    slot: { start: string; end: string },
-    summary: string,
-    description: string = ''
-  ): Promise<Event> {
+  async scheduleAppointment(appointmentData: {
+    clientEmail: string;
+    clientName: string;
+    dateTime: string;
+    duration: number;
+    description?: string;
+  }): Promise<CalendarEvent> {
     try {
-      const eventData = {
-        summary,
-        description,
-        start: {
-          dateTime: slot.start,
-          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        },
-        end: {
-          dateTime: slot.end,
-          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        },
-        attendees: [{ email: clientEmail }],
-        reminders: {
-          useDefault: false,
-          overrides: [
-            { method: 'email', minutes: 24 * 60 },
-            { method: 'popup', minutes: 10 },
-          ],
-        },
-      };
-
-      return await CalendarService.createEvent(eventData);
+      const response = await axios.post(`${API_BASE_URL}/calendar/schedule`, appointmentData, {
+        headers: await this.getAuthHeader()
+      });
+      return response.data.event;
     } catch (error) {
-      console.error('Error scheduling meeting:', error);
-      throw new Error('Failed to schedule meeting');
+      console.error('Error scheduling appointment:', error);
+      throw error;
     }
   },
 
   /**
-   * Get authorization header with token
+   * Get calendar settings
+   * @returns Promise<any>
+   */
+  async getSettings(): Promise<any> {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/calendar/settings`, {
+        headers: await this.getAuthHeader()
+      });
+      return response.data.settings;
+    } catch (error) {
+      console.error('Error fetching calendar settings:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Update calendar settings
+   * @param settings - Settings data
+   * @returns Promise<any>
+   */
+  async updateSettings(settings: any): Promise<any> {
+    try {
+      const response = await axios.put(`${API_BASE_URL}/calendar/settings`, settings, {
+        headers: await this.getAuthHeader()
+      });
+      return response.data.settings;
+    } catch (error) {
+      console.error('Error updating calendar settings:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get authentication header
    * @returns Promise<{ Authorization: string }>
    */
-  private async getAuthHeader(): Promise<{ Authorization: string }> {
-    const { user } = useAuth(); // Your auth hook
-    if (!user?.accessToken) {
+  async getAuthHeader(): Promise<{ Authorization: string }> {
+    // Get token from localStorage or your auth context
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
       throw new Error('No access token available');
     }
-    return { Authorization: `Bearer ${user.accessToken}` };
+    return { Authorization: `Bearer ${token}` };
   },
 };
 

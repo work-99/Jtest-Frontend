@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { api, authAPI } from '../services/api';
 
 interface User {
   id: string;
@@ -26,8 +26,17 @@ export function useOAuth() {
     try {
       setAuthState(prev => ({ ...prev, isLoading: true }));
       // Initiate OAuth flow with backend
-      const { data } = await axios.get('/api/auth/google');
-      window.location.href = data.url;
+      console.log('Calling Google OAuth endpoint...');
+      const { data } = await api.get('/api/auth/google');
+      console.log('Google OAuth URL:', data.url);
+      
+      // Use window.open for OAuth redirect to avoid popup blockers
+      const authWindow = window.open(data.url, '_self');
+      
+      if (!authWindow) {
+        // Fallback to direct redirect if popup is blocked
+        window.location.href = data.url;
+      }
     } catch (error) {
       console.error('Google authentication failed:', error);
       setAuthState(prev => ({ ...prev, isLoading: false }));
@@ -38,7 +47,7 @@ export function useOAuth() {
     try {
       setAuthState(prev => ({ ...prev, isLoading: true }));
       // Initiate HubSpot OAuth flow
-      const { data } = await axios.get('/api/auth/hubspot');
+      const { data } = await api.get('/api/auth/hubspot');
       window.location.href = data.url;
     } catch (error) {
       console.error('HubSpot authentication failed:', error);
@@ -50,7 +59,7 @@ export function useOAuth() {
   const checkAuthStatus = async () => {
     try {
       setAuthState(prev => ({ ...prev, isLoading: true }));
-      const { data } = await axios.get('/api/auth/status');
+      const { data } = await api.get('/api/auth/status');
       
       setAuthState({
         isAuthenticated: data.authenticated,
@@ -69,7 +78,7 @@ export function useOAuth() {
 
   const logout = async () => {
     try {
-      await axios.post('/api/auth/logout');
+      await api.post('/api/auth/logout');
       setAuthState({
         isAuthenticated: false,
         user: null,

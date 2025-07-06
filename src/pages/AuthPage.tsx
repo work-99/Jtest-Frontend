@@ -53,7 +53,7 @@ interface ServiceStatus {
 const AuthPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, login, logout } = useAuth();
-  const { initiateGoogleAuth, initiateHubspotAuth } = useOAuth();
+  const { handleGoogleAuth, handleHubSpotAuth } = useOAuth();
   const [loading, setLoading] = useState(false);
   const [serviceStatus, setServiceStatus] = useState<ServiceStatus[]>([]);
   const [showSettings, setShowSettings] = useState(false);
@@ -111,7 +111,7 @@ const AuthPage: React.FC = () => {
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      await initiateGoogleAuth();
+      await handleGoogleAuth();
       toast.success('Google authentication initiated');
     } catch (error) {
       toast.error('Failed to initiate Google authentication');
@@ -124,7 +124,7 @@ const AuthPage: React.FC = () => {
   const handleHubspotConnect = async () => {
     setLoading(true);
     try {
-      await initiateHubspotAuth();
+      await handleHubSpotAuth();
       toast.success('HubSpot authentication initiated');
     } catch (error) {
       toast.error('Failed to initiate HubSpot authentication');
@@ -202,8 +202,8 @@ const AuthPage: React.FC = () => {
               Connect your services to enable the AI agent's full capabilities. The agent will use these integrations to provide personalized assistance.
             </Alert>
 
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={8}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+              <Box sx={{ flex: '1 1 600px' }}>
                 <Typography variant="h6" gutterBottom>
                   Service Connections
                 </Typography>
@@ -250,9 +250,9 @@ const AuthPage: React.FC = () => {
                     </ListItem>
                   ))}
                 </List>
-              </Grid>
+              </Box>
 
-              <Grid item xs={12} md={4}>
+              <Box sx={{ flex: '1 1 300px' }}>
                 <Paper sx={{ p: 2 }}>
                   <Typography variant="h6" gutterBottom>
                     Quick Actions
@@ -282,8 +282,8 @@ const AuthPage: React.FC = () => {
                     </Button>
                   </Box>
                 </Paper>
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
           </CardContent>
         </Card>
 

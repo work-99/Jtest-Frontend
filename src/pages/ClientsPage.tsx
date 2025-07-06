@@ -59,7 +59,7 @@ const ClientsPage: React.FC = () => {
     const loadClients = async () => {
       try {
         setLoading(true);
-        const data = await fetchClients(user?.id);
+        const data = await fetchClients();
         setClients(mapHubspotDataToClients(data));
       } catch (error) {
         enqueueSnackbar('Failed to load clients', { variant: 'error' });
@@ -90,7 +90,7 @@ const ClientsPage: React.FC = () => {
   const handleRefresh = async () => {
     try {
       setLoading(true);
-      const data = await fetchClients(user?.id);
+      const data = await fetchClients();
       setClients(mapHubspotDataToClients(data));
       enqueueSnackbar('Client list refreshed', { variant: 'success' });
     } catch (error) {

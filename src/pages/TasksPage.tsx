@@ -207,8 +207,8 @@ const TasksPage: React.FC = () => {
           </Box>
 
           {/* Task Statistics */}
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} md={2.4}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+            <Box sx={{ flex: '1 1 200px', minWidth: '200px' }}>
               <Card>
                 <CardContent sx={{ textAlign: 'center' }}>
                   <Typography variant="h4" color="primary">
@@ -219,8 +219,8 @@ const TasksPage: React.FC = () => {
                   </Typography>
                 </CardContent>
               </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={2.4}>
+            </Box>
+            <Box sx={{ flex: '1 1 200px', minWidth: '200px' }}>
               <Card>
                 <CardContent sx={{ textAlign: 'center' }}>
                   <Typography variant="h4" color="warning.main">
@@ -231,8 +231,8 @@ const TasksPage: React.FC = () => {
                   </Typography>
                 </CardContent>
               </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={2.4}>
+            </Box>
+            <Box sx={{ flex: '1 1 200px', minWidth: '200px' }}>
               <Card>
                 <CardContent sx={{ textAlign: 'center' }}>
                   <Typography variant="h4" color="info.main">
@@ -243,8 +243,8 @@ const TasksPage: React.FC = () => {
                   </Typography>
                 </CardContent>
               </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={2.4}>
+            </Box>
+            <Box sx={{ flex: '1 1 200px', minWidth: '200px' }}>
               <Card>
                 <CardContent sx={{ textAlign: 'center' }}>
                   <Typography variant="h4" color="success.main">
@@ -255,8 +255,8 @@ const TasksPage: React.FC = () => {
                   </Typography>
                 </CardContent>
               </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={2.4}>
+            </Box>
+            <Box sx={{ flex: '1 1 200px', minWidth: '200px' }}>
               <Card>
                 <CardContent sx={{ textAlign: 'center' }}>
                   <Typography variant="h4" color="error.main">
@@ -267,8 +267,8 @@ const TasksPage: React.FC = () => {
                   </Typography>
                 </CardContent>
               </Card>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </Box>
 
         {/* Task List */}
@@ -378,29 +378,31 @@ const TasksPage: React.FC = () => {
               </Box>
             </DialogTitle>
             <DialogContent>
-              <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="h6" gutterBottom>Basic Information</Typography>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <Typography><strong>Type:</strong> {showTaskDetails.type}</Typography>
-                    <Typography><strong>Status:</strong> {showTaskDetails.status}</Typography>
-                    <Typography><strong>Created:</strong> {format(new Date(showTaskDetails.created_at), 'PPpp')}</Typography>
-                    <Typography><strong>Updated:</strong> {format(new Date(showTaskDetails.updated_at), 'PPpp')}</Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+                  <Box sx={{ flex: '1 1 300px' }}>
+                    <Typography variant="h6" gutterBottom>Basic Information</Typography>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                      <Typography><strong>Type:</strong> {showTaskDetails.type}</Typography>
+                      <Typography><strong>Status:</strong> {showTaskDetails.status}</Typography>
+                      <Typography><strong>Created:</strong> {format(new Date(showTaskDetails.created_at), 'PPpp')}</Typography>
+                      <Typography><strong>Updated:</strong> {format(new Date(showTaskDetails.updated_at), 'PPpp')}</Typography>
+                    </Box>
                   </Box>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="h6" gutterBottom>Data</Typography>
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={6}
-                    value={JSON.stringify(showTaskDetails.data, null, 2)}
-                    InputProps={{ readOnly: true }}
-                    variant="outlined"
-                  />
-                </Grid>
+                  <Box sx={{ flex: '1 1 300px' }}>
+                    <Typography variant="h6" gutterBottom>Data</Typography>
+                    <TextField
+                      fullWidth
+                      multiline
+                      rows={6}
+                      value={JSON.stringify(showTaskDetails.data, null, 2)}
+                      InputProps={{ readOnly: true }}
+                      variant="outlined"
+                    />
+                  </Box>
+                </Box>
                 {showTaskDetails.result && (
-                  <Grid item xs={12}>
+                  <Box>
                     <Typography variant="h6" gutterBottom>Result</Typography>
                     <TextField
                       fullWidth
@@ -410,17 +412,17 @@ const TasksPage: React.FC = () => {
                       InputProps={{ readOnly: true }}
                       variant="outlined"
                     />
-                  </Grid>
+                  </Box>
                 )}
                 {showTaskDetails.error_message && (
-                  <Grid item xs={12}>
+                  <Box>
                     <Alert severity="error">
                       <Typography variant="h6" gutterBottom>Error</Typography>
                       {showTaskDetails.error_message}
                     </Alert>
-                  </Grid>
+                  </Box>
                 )}
-              </Grid>
+              </Box>
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setShowTaskDetails(null)}>Close</Button>

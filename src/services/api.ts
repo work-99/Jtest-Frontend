@@ -3,6 +3,9 @@ import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
+console.log('API_BASE_URL:', API_BASE_URL);
+console.log('REACT_APP_API_URL env var:', process.env.REACT_APP_API_URL);
+
 export const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -13,7 +16,7 @@ export const api = axios.create({
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('authToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -30,9 +33,10 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Token expired or invalid
-      localStorage.removeItem('token');
+      localStorage.removeItem('authToken');
       localStorage.removeItem('user');
-      window.location.href = '/auth';
+      // Don't redirect automatically to avoid loops
+      // window.location.href = '/auth';
     }
     return Promise.reject(error);
   }
@@ -40,19 +44,19 @@ api.interceptors.response.use(
 
 // Auth API functions
 export const authAPI = {
-  googleAuth: (code: string) => api.post('/auth/google', { code }),
-  hubspotAuth: (code: string) => api.post('/auth/hubspot', { code }),
-  getMe: () => api.get('/auth/me'),
-  logout: () => api.post('/auth/logout'),
+  googleAuth: (code: string) => api.post('/api/auth/google', { code }),
+  hubspotAuth: (code: string) => api.post('/api/auth/hubspot', { code }),
+  getMe: () => api.get('/api/auth/status'),
+  logout: () => api.post('/api/auth/logout'),
 };
 
 // Chat API functions
 export const chatAPI = {
   sendMessage: (message: string, sessionId?: string) => 
-    api.post('/chat/message', { message, sessionId }),
+    api.post('/api/chat/message', { message, sessionId }),
   getHistory: (sessionId?: string) => 
-    api.get('/chat/history', { params: { sessionId } }),
-  getConversations: () => api.get('/chat/conversations'),
+    api.get('/api/chat/history', { params: { sessionId } }),
+  getConversations: () => api.get('/api/chat/conversations'),
 };
 
 // Tasks API functions

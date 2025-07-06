@@ -3,33 +3,31 @@ import { create } from 'zustand';
 interface Message {
   role: 'user' | 'assistant';
   content: string;
-  timestamp?: Date;
+  timestamp: Date;
 }
 
 interface ChatState {
   messages: Message[];
   connectedServices: {
     gmail: boolean;
-    calendar: boolean;
     hubspot: boolean;
   };
-  addMessage: (message: Message) => void;
+  addMessage: (message: Omit<Message, 'timestamp'>) => void;
   setConnectedServices: (services: Partial<ChatState['connectedServices']>) => void;
 }
 
-export const useStore = create<ChatState>((set) => ({
+export const useStore = create<ChatState>((set: any) => ({
   messages: [],
   connectedServices: {
     gmail: false,
-    calendar: false,
     hubspot: false
   },
-  addMessage: (message) => 
-    set((state) => ({ 
-      messages: [...state.messages, { ...message, timestamp: new Date() }] 
+  addMessage: (message: Omit<Message, 'timestamp'>) =>
+    set((state: ChatState) => ({
+      messages: [...state.messages, { ...message, timestamp: new Date() }]
     })),
-  setConnectedServices: (services) => 
-    set((state) => ({ 
-      connectedServices: { ...state.connectedServices, ...services } 
+  setConnectedServices: (services: Partial<ChatState['connectedServices']>) =>
+    set((state: ChatState) => ({
+      connectedServices: { ...state.connectedServices, ...services }
     })),
 }));

@@ -50,10 +50,13 @@ export const useChat = () => {
     try {
       const response = await chatAPI.sendMessage(content, state.sessionId || undefined);
       
+      console.log('Chat API response:', response);
+      console.log('Response data:', response.data);
+      
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: response.data.text || response.data.message,
+        content: response.data.text || response.data.message || 'No response received',
         timestamp: new Date(),
         metadata: {
           toolCalls: response.data.toolCalls,
@@ -69,6 +72,8 @@ export const useChat = () => {
         sessionId: response.data.sessionId || prev.sessionId
       }));
 
+      console.log('Updated state with sessionId:', response.data.sessionId);
+
       // Show notification for action required
       if (response.data.actionRequired) {
         toast.success('Action required! Check the task management panel.');
@@ -76,11 +81,20 @@ export const useChat = () => {
 
     } catch (error: any) {
       console.error('Chat error:', error);
-      
+
+      let errorMsg = 'Failed to send message';
+      if (error.response?.data?.error) {
+        errorMsg = error.response.data.error;
+      } else if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      } else if (error.message) {
+        errorMsg = error.message;
+      }
+
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'I apologize, but I encountered an error processing your request. Please try again.',
+        content: errorMsg,
         timestamp: new Date(),
         metadata: {
           context: 'Error occurred'
@@ -91,10 +105,10 @@ export const useChat = () => {
         ...prev,
         messages: [...prev.messages, errorMessage],
         isLoading: false,
-        error: error.response?.data?.message || 'Failed to send message'
+        error: errorMsg
       }));
 
-      toast.error('Failed to send message');
+      toast.error(errorMsg);
     }
   }, [state.sessionId]);
 

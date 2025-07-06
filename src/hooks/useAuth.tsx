@@ -1,6 +1,6 @@
 // hooks/useAuth.ts
-import { useState, useEffect, createContext, useContext } from 'react';
-import { api } from '../services/api';
+import { useState, useEffect, createContext, useContext, useCallback } from 'react';
+import { api, authAPI } from '../services/api';
 
 interface User {
   id: number;
@@ -35,30 +35,51 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = (userData: User) => {
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
+    // Set the token in axios defaults for future requests
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
-    localStorage.removeItem('token');
+    localStorage.removeItem('authToken');
+    // Clear the authorization header
+    delete api.defaults.headers.common['Authorization'];
   };
 
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('authToken');
       if (!token) {
         setIsLoading(false);
         return;
       }
-      const response = await api.get('/auth/me');
-      setUser(response.data);
+      
+      // Set the token in axios defaults
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      
+      const response = await authAPI.getMe();
+      if (response.data.user) {
+        setUser(response.data.user);
+      } else {
+        // Don't call logout here, just clear the token
+        localStorage.removeItem('authToken');
+        delete api.defaults.headers.common['Authorization'];
+        setUser(null);
+      }
     } catch (error) {
       console.error('Auth check failed:', error);
-      logout();
+      // Don't call logout here, just clear the token
+      localStorage.removeItem('authToken');
+      delete api.defaults.headers.common['Authorization'];
+      setUser(null);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     // Check for existing user in localStorage
@@ -66,8 +87,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
-    checkAuth();
-  }, []);
+    
+    // Only check auth if there's a token
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      checkAuth();
+    } else {
+      setIsLoading(false);
+    }
+  }, [checkAuth]);
 
   return (
     <AuthContext.Provider value={{ user, isLoading, login, logout, checkAuth }}>

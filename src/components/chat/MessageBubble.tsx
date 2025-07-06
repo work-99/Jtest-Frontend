@@ -1,6 +1,17 @@
 import { Avatar, Box, Typography } from '@mui/material';
 import { marked } from 'marked';
-import { Message } from '../../types/types';
+
+interface Message {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: Date;
+  metadata?: {
+    toolCalls?: any[];
+    actionRequired?: boolean;
+    context?: string;
+  };
+}
 
 interface MessageBubbleProps {
   message: Message;
@@ -50,7 +61,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
             }
           }}
           dangerouslySetInnerHTML={{ 
-            __html: marked.parse(message.content) 
+            __html: marked.parse(message.content) as string
           }}
         />
       </Box>

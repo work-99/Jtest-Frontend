@@ -35,6 +35,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import Layout from './Layout';
 import AuthPage from './pages/AuthPage';
+import AuthCallback from './pages/AuthCallback';
 import ChatPage from './pages/ChatPage';
 import ClientsPage from './pages/ClientsPage';
 import TasksPage from './pages/TasksPage';
@@ -77,6 +78,7 @@ function AppContent() {
     return (
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="*" element={<Navigate to="/auth" replace />} />
       </Routes>
     );
