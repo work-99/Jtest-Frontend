@@ -50,7 +50,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsLoading(false);
         return;
       }
-
       const response = await api.get('/auth/me');
       setUser(response.data);
     } catch (error) {
@@ -67,7 +66,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
-    
     checkAuth();
   }, []);
 

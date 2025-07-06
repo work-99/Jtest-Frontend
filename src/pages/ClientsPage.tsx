@@ -30,7 +30,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useSnackbar } from 'notistack';
 import ClientDetailsModal from '../components/ClientDetailsModal';
 import NewClientModal from '../components/NewClientModal';
-import { fetchClients } from '../services/hubspotService';
+import { fetchClients } from '../services/hubspot';
 
 interface Client {
   id: string;
