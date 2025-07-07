@@ -89,10 +89,4 @@ export const instructionsAPI = {
   toggleInstruction: (id: number) => api.patch(`/instructions/${id}/toggle`),
 };
 
-// User settings API functions
-export const settingsAPI = {
-  getSettings: () => api.get('/user/settings'),
-  updateSettings: (settings: any) => api.put('/user/settings', settings),
-};
-
 export default api;

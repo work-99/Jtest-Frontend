@@ -39,7 +39,6 @@ import AuthCallback from './pages/AuthCallback';
 import ChatPage from './pages/ChatPage';
 import ClientsPage from './pages/ClientsPage';
 import TasksPage from './pages/TasksPage';
-import SettingsPage from './pages/SettingsPage';
 
 // Create a theme instance
 const theme = createTheme({
@@ -91,7 +90,6 @@ function AppContent() {
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/clients" element={<ClientsPage />} />
         <Route path="/tasks" element={<TasksPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/chat" replace />} />
       </Routes>
     </Layout>
