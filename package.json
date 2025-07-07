@@ -2,6 +2,7 @@
   "name": "financial-advisor-agent",
   "version": "0.1.0",
   "private": true,
+
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -19,6 +20,7 @@
     "@types/react-dom": "^19.1.6",
     "axios": "^1.10.0",
     "date-fns": "^4.1.0",
+    "http-proxy-middleware": "^3.0.5",
     "marked": "^16.0.0",
     "notistack": "^3.0.2",
     "react": "^19.1.0",

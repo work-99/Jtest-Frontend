@@ -28,7 +28,7 @@ export interface HubSpotClient {
 
 export const fetchClients = async (): Promise<HubSpotClient[]> => {
   try {
-    const response = await api.get('/hubspot/contacts');
+    const response = await api.get('/integrations/hubspot/contacts');
     return response.data;
   } catch (error) {
     console.error('Error fetching HubSpot clients:', error);
@@ -38,7 +38,7 @@ export const fetchClients = async (): Promise<HubSpotClient[]> => {
 
 export const getClientDetails = async (contactId: string): Promise<HubSpotContact> => {
   try {
-    const response = await api.get(`/hubspot/contacts/${contactId}`);
+    const response = await api.get(`/integrations/hubspot/contacts/${contactId}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching client details:', error);
@@ -55,7 +55,7 @@ export const createClient = async (clientData: {
   jobtitle?: string;
 }): Promise<HubSpotContact> => {
   try {
-    const response = await api.post('/hubspot/contacts', clientData);
+    const response = await api.post('/integrations/hubspot/contacts', clientData);
     return response.data;
   } catch (error) {
     console.error('Error creating client:', error);
@@ -68,7 +68,7 @@ export const updateClient = async (
   clientData: Partial<HubSpotContact['properties']>
 ): Promise<HubSpotContact> => {
   try {
-    const response = await api.put(`/hubspot/contacts/${contactId}`, clientData);
+    const response = await api.put(`/integrations/hubspot/contacts/${contactId}`, clientData);
     return response.data;
   } catch (error) {
     console.error('Error updating client:', error);
@@ -78,7 +78,7 @@ export const updateClient = async (
 
 export const deleteClient = async (contactId: string): Promise<void> => {
   try {
-    await api.delete(`/hubspot/contacts/${contactId}`);
+    await api.delete(`/integrations/hubspot/contacts/${contactId}`);
   } catch (error) {
     console.error('Error deleting client:', error);
     throw error;
@@ -87,10 +87,32 @@ export const deleteClient = async (contactId: string): Promise<void> => {
 
 export const searchClients = async (query: string): Promise<HubSpotClient[]> => {
   try {
-    const response = await api.get(`/hubspot/contacts/search?q=${encodeURIComponent(query)}`);
+    const response = await api.get(`/integrations/hubspot/contacts/search?q=${encodeURIComponent(query)}`);
     return response.data;
   } catch (error) {
     console.error('Error searching clients:', error);
     throw error;
+  }
+};
+
+// HubSpot authentication functions
+export const hubspotService = {
+  getAuthUrl: async () => {
+    const response = await api.get('/integrations/hubspot/auth-url');
+    return response.data.url;
+  },
+  
+  connect: async (authUrl: string) => {
+    window.location.href = authUrl;
+  },
+  
+  getStatus: async () => {
+    const response = await api.get('/integrations/hubspot/status');
+    return response.data;
+  },
+  
+  disconnect: async () => {
+    const response = await api.post('/integrations/hubspot/disconnect');
+    return response.data;
   }
 };

@@ -97,7 +97,7 @@ const ChatPage: React.FC = () => {
 
   const loadTasks = async () => {
     try {
-      const response = await api.get('/tasks');
+      const response = await api.get('/api/tasks');
       setTasks(response.data);
     } catch (error) {
       console.error('Error loading tasks:', error);
@@ -317,7 +317,7 @@ const ChatPage: React.FC = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Ask me anything about your clients, schedule appointments, or manage tasks..."
+            placeholder="Ask me anything about your clients, schedule notes, or manage tasks..."
             variant="outlined"
             size="small"
           />

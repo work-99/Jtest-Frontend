@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@mui/material';
 import HubspotLogo from './HubspotLogo';
 import toast from 'react-hot-toast';
-import axios from 'axios';
+import api from '../../services/api';
 
 interface HubSpotAuthButtonProps {
   onConnectionChange?: (isConnected: boolean) => void;
@@ -16,7 +16,7 @@ export default function HubSpotAuthButton({ onConnectionChange }: HubSpotAuthBut
   useEffect(() => {
     const checkConnectionStatus = async () => {
       try {
-        const response = await axios.get('/api/integrations/hubspot/status');
+        const response = await api.get('/api/integrations/hubspot/status');
         setIsConnected(response.data.connected);
         if (onConnectionChange) onConnectionChange(response.data.connected);
       } catch (error) {
@@ -32,7 +32,7 @@ export default function HubSpotAuthButton({ onConnectionChange }: HubSpotAuthBut
       // Handle disconnection
       try {
         setIsLoading(true);
-        await axios.post('/api/integrations/hubspot/disconnect');
+        await api.post('/api/integrations/hubspot/disconnect');
         setIsConnected(false);
         if (onConnectionChange) onConnectionChange(false);
         toast.success('Disconnected from HubSpot');
@@ -46,7 +46,7 @@ export default function HubSpotAuthButton({ onConnectionChange }: HubSpotAuthBut
       // Initiate connection
       try {
         setIsLoading(true);
-        const response = await axios.get('/api/integrations/hubspot/auth-url');
+        const response = await api.get('/api/integrations/hubspot/auth-url');
         
         // Open HubSpot auth window
         const width = 600;
@@ -67,7 +67,7 @@ export default function HubSpotAuthButton({ onConnectionChange }: HubSpotAuthBut
             setIsLoading(false);
             
             // Verify connection
-            const statusResponse = await axios.get('/api/integrations/hubspot/status');
+            const statusResponse = await api.get('/api/integrations/hubspot/status');
             const connected = statusResponse.data.connected;
             setIsConnected(connected);
             if (onConnectionChange) onConnectionChange(connected);

@@ -1,0 +1,5 @@
+Public app name : Public app name
+App ID : 15577318
+Client ID : f601bcc1-b9ae-4d41-9b7e-b7c8308d5bbc
+Client secret: 06d4e54b-67db-40cc-bf59-a48e63fd8cfc
+Redirect URL : http://localhost:3001/auth/hubspot/callback
