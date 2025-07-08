@@ -2,6 +2,7 @@
   "name": "financial-advisor-agent",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://jtest-frontend.onrender.com",
 
   "dependencies": {
     "@emotion/react": "^11.14.0",
