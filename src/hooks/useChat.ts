@@ -1,5 +1,5 @@
 // hooks/useChat.ts
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { chatAPI } from '../services/api';
 import toast from 'react-hot-toast';
 

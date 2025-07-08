@@ -5,7 +5,6 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  TextField,
   Box,
   Typography,
   Chip,
@@ -31,12 +30,6 @@ const ClientDetailsModal: React.FC<ClientDetailsModalProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    name: client?.name || '',
-    email: client?.email || '',
-    phone: client?.phone || '',
-    status: client?.status || 'prospect'
-  });
 
   if (!client) return null;
 
@@ -48,14 +41,9 @@ const ClientDetailsModal: React.FC<ClientDetailsModalProps> = ({
     setIsEditing(!isEditing);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
   const handleSave = () => {
-    const updatedClient = { ...client, ...formData };
-    onUpdate(updatedClient);
+    // Only use client for now, as formData is not defined
+    onUpdate(client);
     setIsEditing(false);
   };
 

@@ -21,7 +21,6 @@ import {
   Search,
   Add,
   Refresh,
-  Edit,
   Email,
   CalendarToday,
   AttachMoney

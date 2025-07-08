@@ -11,7 +11,6 @@ import {
   ListItemText,
   Avatar,
   Chip,
-  Divider,
   CircularProgress,
   Alert,
   Button,
@@ -21,16 +20,12 @@ import {
   DialogActions,
   Card,
   CardContent,
-  Grid,
   Tooltip,
-  Fab,
   Badge
 } from '@mui/material';
 import {
   Send as SendIcon,
-  AttachFile as AttachFileIcon,
   Settings as SettingsIcon,
-  History as HistoryIcon,
   SmartToy as AIIcon,
   Person as PersonIcon,
   Schedule as ScheduleIcon,
@@ -75,10 +70,7 @@ const ChatPage: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [showContext, setShowContext] = useState(false);
   const [showTasks, setShowTasks] = useState(false);
-  const [showEmailModal, setShowEmailModal] = useState(false);
-  const [showContactModal, setShowContactModal] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [contextData, setContextData] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -402,7 +394,7 @@ const ChatPage: React.FC = () => {
                 <Button
                   variant="outlined"
                   startIcon={<EmailIcon />}
-                  onClick={() => setShowEmailModal(true)}
+                  onClick={() => setShowContext(true)}
                   fullWidth
                 >
                   Send Email
@@ -410,7 +402,7 @@ const ChatPage: React.FC = () => {
                 <Button
                   variant="outlined"
                   startIcon={<PersonAddIcon />}
-                  onClick={() => setShowContactModal(true)}
+                  onClick={() => setShowContext(true)}
                   fullWidth
                 >
                   Add Contact

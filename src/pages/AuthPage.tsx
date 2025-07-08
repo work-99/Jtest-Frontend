@@ -1,12 +1,11 @@
 // pages/AuthPage.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Card,
   CardContent,
   Typography,
   Button,
-  Grid,
   Chip,
   Alert,
   CircularProgress,
@@ -17,12 +16,10 @@ import {
   ListItemIcon,
   ListItemText,
   ListItemSecondaryAction,
-  Switch,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   FormControlLabel,
   Checkbox
 } from '@mui/material';
@@ -32,9 +29,7 @@ import {
   CalendarToday as CalendarIcon,
   Business as BusinessIcon,
   CheckCircle as CheckCircleIcon,
-  Error as ErrorIcon,
   Settings as SettingsIcon,
-  Security as SecurityIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
@@ -52,7 +47,7 @@ interface ServiceStatus {
 
 const AuthPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, login, logout } = useAuth();
+  const { user, logout } = useAuth();
   const { handleGoogleAuth, handleHubSpotAuth } = useOAuth();
   const [loading, setLoading] = useState(false);
   const [serviceStatus, setServiceStatus] = useState<ServiceStatus[]>([]);
@@ -64,22 +59,14 @@ const AuthPage: React.FC = () => {
     emailNotifications: true
   });
 
-  useEffect(() => {
-    if (user) {
-      checkServiceConnections();
-    }
-  }, [user]);
-
-  const checkServiceConnections = async () => {
+  const checkServiceConnections = useCallback(async () => {
     if (!user) return;
-
     try {
       const [gmailStatus, hubspotStatus, calendarStatus] = await Promise.all([
         api.get('/integrations/gmail/status').catch(() => ({ data: { connected: false } })),
         api.get('/integrations/hubspot/status').catch(() => ({ data: { connected: false } })),
         api.get('/integrations/calendar/status').catch(() => ({ data: { connected: false } }))
       ]);
-
       setServiceStatus([
         {
           name: 'Gmail',
@@ -106,7 +93,13 @@ const AuthPage: React.FC = () => {
     } catch (error) {
       console.error('Error checking service connections:', error);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      checkServiceConnections();
+    }
+  }, [user, checkServiceConnections]);
 
   const handleGoogleLogin = async () => {
     setLoading(true);

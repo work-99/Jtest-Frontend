@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { api, authAPI } from '../services/api';
+import { api } from '../services/api';
 
 interface User {
   id: string;
@@ -93,7 +93,7 @@ export function useOAuth() {
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     if (token) {
-      checkAuthStatus();
+    checkAuthStatus();
     } else {
       setAuthState({
         isAuthenticated: false,

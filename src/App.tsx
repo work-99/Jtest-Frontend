@@ -55,20 +55,6 @@ const theme = createTheme({
 // Create a client
 const queryClient = new QueryClient();
 
-// Protected Route Component
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, isLoading } = useAuth();
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!user) {
-    return <Navigate to="/auth" replace />;
-  }
-
-  return <>{children}</>;
-};
 
 function AppContent() {
   const { user } = useAuth();

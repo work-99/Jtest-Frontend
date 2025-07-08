@@ -31,7 +31,6 @@ import {
   Hub,
   Workspaces
 } from '@mui/icons-material';
-import { useGoogleAuth, useOAuth } from '../../hooks/useOAuth';
 import { useAuth } from '../../hooks/useAuth';
 import HubspotAuthButton from '../../components/auth/HubspotAuthButton';
 import GoogleAuthButton from '../../components/auth/GoogleAuthButton';
@@ -50,12 +49,6 @@ const SidebarContainer = styled(Drawer)(({ theme }) => ({
   },
 }));
 
-const IntegrationItem = styled(ListItemButton)(({ theme }) => ({
-  paddingLeft: theme.spacing(4),
-  '& .MuiListItemIcon-root': {
-    minWidth: '36px'
-  }
-}));
 
 interface SidebarProps {
   open: boolean;
