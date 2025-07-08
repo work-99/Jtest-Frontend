@@ -89,9 +89,18 @@ export function useOAuth() {
     }
   };
 
-  // Check auth status on mount
+  // Check auth status on mount only if there's a token
   useEffect(() => {
-    checkAuthStatus();
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      checkAuthStatus();
+    } else {
+      setAuthState({
+        isAuthenticated: false,
+        user: null,
+        isLoading: false,
+      });
+    }
   }, []);
 
   return {

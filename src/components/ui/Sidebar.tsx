@@ -32,6 +32,7 @@ import {
   Workspaces
 } from '@mui/icons-material';
 import { useGoogleAuth, useOAuth } from '../../hooks/useOAuth';
+import { useAuth } from '../../hooks/useAuth';
 import HubspotAuthButton from '../../components/auth/HubspotAuthButton';
 import GoogleAuthButton from '../../components/auth/GoogleAuthButton';
 import ConnectionStatus from '../../components/ui/ConnectionStatus';
@@ -65,7 +66,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ open, onClose, activeView, setActiveView }) => {
   const theme = useTheme();
-  const { user } = useOAuth();
+  const { user } = useAuth();
   const [openIntegrations, setOpenIntegrations] = useState(true);
   const [openNotifications, setOpenNotifications] = useState(false);
 
