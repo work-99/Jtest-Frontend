@@ -48,6 +48,7 @@ export const authAPI = {
   hubspotAuth: (code: string) => api.post('/api/auth/hubspot', { code }),
   getMe: () => api.get('/api/auth/status'),
   logout: () => api.post('/api/auth/logout'),
+  reauthenticateGoogle: () => api.post('/api/auth/google/reauthenticate'),
 };
 
 // Chat API functions

@@ -2,6 +2,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { chatAPI } from '../services/api';
 import { webSocketService, WebSocketMessage, TaskUpdate, ProactiveUpdate, Notification } from '../services/websocket.service';
+import { handleGoogleReauthentication, isGoogleAuthError } from '../utils/auth';
 import toast from 'react-hot-toast';
 
 interface Message {
@@ -96,13 +97,10 @@ export const useChat = () => {
           toast.error(notification.message);
           break;
         case 'warning':
-          toast.error(notification.message); // react-hot-toast doesn't have warning, use error
-          break;
         case 'info':
-          toast(notification.message); // Use default toast for info
-          break;
         default:
-          toast(notification.message);
+          toast(notification.message); // Use default toast for warning, info, and default cases
+          break;
       }
     });
 
@@ -178,6 +176,19 @@ export const useChat = () => {
 
     } catch (error: any) {
       console.error('Chat error:', error);
+
+      // Check if this is a Google authentication error
+      if (isGoogleAuthError(error)) {
+        toast.error('Google authentication expired. Re-authenticating...');
+        
+        const reauthSuccess = await handleGoogleReauthentication();
+        if (reauthSuccess) {
+          // The user will be redirected to Google OAuth
+          return;
+        } else {
+          toast.error('Failed to re-authenticate with Google. Please try again.');
+        }
+      }
 
       let errorMsg = 'Failed to send message';
       if (error.response?.data?.error) {
