@@ -1,6 +1,7 @@
 // hooks/useChat.ts
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { chatAPI } from '../services/api';
+import { webSocketService, WebSocketMessage, TaskUpdate, ProactiveUpdate, Notification } from '../services/websocket.service';
 import toast from 'react-hot-toast';
 
 interface Message {
@@ -20,6 +21,7 @@ interface ChatState {
   isLoading: boolean;
   error: string | null;
   sessionId: string | null;
+  isConnected: boolean;
 }
 
 export const useChat = () => {
@@ -27,8 +29,97 @@ export const useChat = () => {
     messages: [],
     isLoading: false,
     error: null,
-    sessionId: null
+    sessionId: null,
+    isConnected: false
   });
+
+  // Initialize WebSocket connection
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      webSocketService.connect(token);
+    }
+
+    // Set up WebSocket event handlers
+    const unsubscribeMessage = webSocketService.onMessage((wsMessage: WebSocketMessage) => {
+      const message: Message = {
+        id: Date.now().toString(),
+        role: wsMessage.role,
+        content: wsMessage.content,
+        timestamp: new Date(wsMessage.timestamp),
+        metadata: {
+          toolCalls: wsMessage.toolCalls,
+          actionRequired: wsMessage.actionRequired
+        }
+      };
+
+      setState(prev => ({
+        ...prev,
+        messages: [...prev.messages, message],
+        isLoading: false
+      }));
+    });
+
+    const unsubscribeTaskUpdate = webSocketService.onTaskUpdate((task: TaskUpdate) => {
+      toast.success(`Task updated: ${task.type} - ${task.status}`);
+    });
+
+    const unsubscribeProactiveUpdate = webSocketService.onProactiveUpdate((update: ProactiveUpdate) => {
+      if (update.actionRequired) {
+        toast.success('Proactive action taken! Check tasks for details.');
+      }
+      
+      // Add proactive update as a system message
+      const message: Message = {
+        id: Date.now().toString(),
+        role: 'system',
+        content: `Proactive action: ${update.response}`,
+        timestamp: new Date(update.timestamp),
+        metadata: {
+          toolCalls: update.toolCalls,
+          actionRequired: update.actionRequired
+        }
+      };
+
+      setState(prev => ({
+        ...prev,
+        messages: [...prev.messages, message]
+      }));
+    });
+
+    const unsubscribeNotification = webSocketService.onNotification((notification: Notification) => {
+      switch (notification.type) {
+        case 'success':
+          toast.success(notification.message);
+          break;
+        case 'error':
+          toast.error(notification.message);
+          break;
+        case 'warning':
+          toast.error(notification.message); // react-hot-toast doesn't have warning, use error
+          break;
+        case 'info':
+          toast(notification.message); // Use default toast for info
+          break;
+        default:
+          toast(notification.message);
+      }
+    });
+
+    const unsubscribeConnection = webSocketService.onConnectionChange((connected: boolean) => {
+      setState(prev => ({ ...prev, isConnected: connected }));
+    });
+
+    // Cleanup on unmount
+    return () => {
+      unsubscribeMessage();
+      unsubscribeTaskUpdate();
+      unsubscribeProactiveUpdate();
+      unsubscribeNotification();
+      unsubscribeConnection();
+      webSocketService.disconnect();
+    };
+  }, []);
 
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim()) return;
@@ -48,6 +139,7 @@ export const useChat = () => {
     }));
 
     try {
+      // Send via REST API for immediate response
       const response = await chatAPI.sendMessage(content, state.sessionId || undefined);
       
       console.log('Chat API response:', response);
@@ -77,6 +169,11 @@ export const useChat = () => {
       // Show notification for action required
       if (response.data.actionRequired) {
         toast.success('Action required! Check the task management panel.');
+      }
+
+      // Also send via WebSocket for real-time updates
+      if (webSocketService.isConnectedToServer()) {
+        webSocketService.sendChatMessage(content);
       }
 
     } catch (error: any) {
@@ -165,6 +262,7 @@ export const useChat = () => {
     isLoading: state.isLoading,
     error: state.error,
     sessionId: state.sessionId,
+    isConnected: state.isConnected,
     sendMessage,
     loadHistory,
     clearMessages,
